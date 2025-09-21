@@ -1,4 +1,4 @@
-// Dark Mode Toggle
+ // Dark Mode Toggle
         const toggleSwitch = document.querySelector('#checkbox');
         const currentTheme = localStorage.getItem('theme') || 'light';
         
@@ -59,3 +59,30 @@
                 submitBtn.disabled = false;
             }, 1000);
         });
+
+        // Netlify Form AJAX Submission
+const handleSubmit = (event) => {
+  event.preventDefault();
+
+  const myForm = event.target;
+  const formData = new FormData(myForm);
+
+  fetch("/", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(formData).toString(),
+  })
+    .then(() => {
+      // Show success message
+      document.getElementById("form-status").innerHTML = "Message sent successfully! I'll get back to you soon.";
+      document.getElementById("form-status").className = "form-status success";
+      myForm.reset();
+    })
+    .catch((error) => {
+      // Show error message
+      document.getElementById("form-status").innerHTML = "Sorry, there was an error sending your message. Please try again or contact me directly at thelmabuabeng4@gmail.com";
+      document.getElementById("form-status").className = "form-status error";
+    });
+};
+
+document.querySelector("form").addEventListener("submit", handleSubmit);
