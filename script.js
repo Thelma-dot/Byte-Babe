@@ -34,9 +34,28 @@
             });
         });
         
-        // Form submission handling
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Thanks for your message! I\'ll get back to you soon.');
-            this.reset();
+        // Handle Netlify Form Submission
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submit-btn');
+            const statusEl = document.getElementById('form-status');
+            
+            // Change button text to indicate loading
+            submitBtn.innerHTML = 'Sending...';
+            submitBtn.disabled = true;
+            
+            // Hide any previous status messages
+            statusEl.className = 'form-status';
+            
+            // Netlify will handle the form submission, but we'll show a temporary message
+            setTimeout(function() {
+                statusEl.innerHTML = 'Message sent successfully! I\'ll get back to you soon.';
+                statusEl.className = 'form-status success';
+                
+                // Reset form
+                document.getElementById('contact-form').reset();
+                
+                // Reset button
+                submitBtn.innerHTML = 'Send Message';
+                submitBtn.disabled = false;
+            }, 1000);
         });
