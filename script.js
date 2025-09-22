@@ -34,55 +34,52 @@
             });
         });
         
-        // Handle Netlify Form Submission
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            const submitBtn = document.getElementById('submit-btn');
-            const statusEl = document.getElementById('form-status');
-            
-            // Change button text to indicate loading
-            submitBtn.innerHTML = 'Sending...';
-            submitBtn.disabled = true;
-            
-            // Hide any previous status messages
-            statusEl.className = 'form-status';
-            
-            // Netlify will handle the form submission, but we'll show a temporary message
-            setTimeout(function() {
-                statusEl.innerHTML = 'Message sent successfully! I\'ll get back to you soon.';
-                statusEl.className = 'form-status success';
-                
-                // Reset form
-                document.getElementById('contact-form').reset();
-                
-                // Reset button
-                submitBtn.innerHTML = 'Send Message';
-                submitBtn.disabled = false;
-            }, 1000);
+      // Handle Form Submission
+document.getElementById('contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submit-btn');
+    const statusEl = document.getElementById('form-status');
+    
+    // Change button text to indicate loading
+    submitBtn.innerHTML = 'Sending...';
+    submitBtn.disabled = true;
+    
+    // Hide any previous status messages
+    statusEl.className = 'form-status';
+    
+    // Collect form data
+    const formData = new FormData(this);
+    const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        subject: formData.get('subject'),
+        message: formData.get('message')
+    };
+    
+    try {
+        // If using Netlify Forms (simple approach)
+        // Let Netlify handle the form submission
+        const response = await fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(formData).toString()
         });
-
-        // Netlify Form AJAX Submission
-const handleSubmit = (event) => {
-  event.preventDefault();
-
-  const myForm = event.target;
-  const formData = new FormData(myForm);
-
-  fetch("/", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams(formData).toString(),
-  })
-    .then(() => {
-      // Show success message
-      document.getElementById("form-status").innerHTML = "Message sent successfully! I'll get back to you soon.";
-      document.getElementById("form-status").className = "form-status success";
-      myForm.reset();
-    })
-    .catch((error) => {
-      // Show error message
-      document.getElementById("form-status").innerHTML = "Sorry, there was an error sending your message. Please try again or contact me directly at thelmabuabeng4@gmail.com";
-      document.getElementById("form-status").className = "form-status error";
-    });
-};
-
-document.querySelector("form").addEventListener("submit", handleSubmit);
+        
+        if (response.ok) {
+            statusEl.innerHTML = 'Message sent successfully! I\'ll get back to you soon.';
+            statusEl.className = 'form-status success';
+            this.reset();
+        } else {
+            throw new Error('Form submission failed');
+        }
+    } catch (error) {
+        statusEl.innerHTML = 'Sorry, there was an error sending your message. Please try again or contact me directly at your-email@example.com';
+        statusEl.className = 'form-status error';
+    } finally {
+        // Reset button
+        submitBtn.innerHTML = 'Send Message';
+        submitBtn.disabled = false;
+    }
+});
